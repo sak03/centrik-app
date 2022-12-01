@@ -114,7 +114,7 @@ const LandingPage = () => {
     return (
         <div className=''>
             <Toast ref={toast} />
-            <div className="card" style={{ width: "100%", position: "fixed", top: "0", zIndex: "5" }}>
+            <div className="" style={{ width: "100%", position: "fixed", top: "0", zIndex: "5" }}>
                 <Menubar model={items} start={start} end={end} />
             </div>
             <div className='row mx-1' style={{ marginTop: "5rem" }}>
@@ -122,13 +122,13 @@ const LandingPage = () => {
                 {smrtPhone !== undefined && smrtPhone !== null ? smrtPhone.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={() => {
@@ -145,13 +145,13 @@ const LandingPage = () => {
                 {laptopData !== undefined && laptopData !== null ? laptopData.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
@@ -165,13 +165,13 @@ const LandingPage = () => {
                 {fregData !== undefined && fregData !== null ? fregData.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
@@ -186,13 +186,13 @@ const LandingPage = () => {
                 {skincareData !== undefined && skincareData !== null ? skincareData.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
@@ -206,13 +206,13 @@ const LandingPage = () => {
                 {grocerieData !== undefined && grocerieData !== null ? grocerieData.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
@@ -226,13 +226,13 @@ const LandingPage = () => {
                 {homeDecoration !== undefined && homeDecoration !== null ? homeDecoration.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
@@ -246,13 +246,13 @@ const LandingPage = () => {
                 {furniture !== undefined && furniture !== null ? furniture.map((item) => (
                     <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
                         <div className='imgDiv'>
-                            <img src={item.images[0]} width={150}></img>
+                            <img src={item.images[0]} width={150} alt=""></img>
                         </div>
                         <div className='contentDiv'>
                             <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
                             <p>{item.description}</p>
                             <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                            <p>available stock : {item.stock}</p>
+                            <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
                             <p>
                                 <Button label="Buy Now" className="p-button-rounded p-button-success" />  &emsp;
                                 <Button label="Add to Cart" className="p-button-rounded p-button-warning" onClick={showSuccess} />
