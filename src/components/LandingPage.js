@@ -255,7 +255,7 @@ const LandingPage = () => {
                                 <Button
                                     type="cancel"
                                     label="Cancel"
-                                    onClick={()=> setViewMode(0)}
+                                    onClick={() => setViewMode(0)}
                                     className="p-button-outlined p-button-raised p-button-secondary my-2 mx-2"
                                 />
                             </div>
@@ -282,10 +282,22 @@ const LandingPage = () => {
     const start = <img alt="logo" src="logo1.jpeg" height="40" className="mr-2"></img>;
     const end = (
         <div className='d-flex'>
-            <Button label={count} icon="pi pi-shopping-cart" className='mx-2' />
-            <InputText placeholder="Search" type="text" value={search} onChange={(e) => {
-                setSearch(e.value)
-            }} />
+            <Button
+                label={count}
+                icon="pi pi-shopping-cart"
+                className='mx-2'
+                onClick={() => {
+                    setViewMode(1);
+                }}
+            />
+            <InputText
+                placeholder="Search"
+                type="text"
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.value)
+                }}
+            />
         </div>
     );
 
