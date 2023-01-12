@@ -32,6 +32,7 @@ const LandingPage = () => {
     const [showMessage, setShowMessage] = useState(false);
     const [formData, setFormData] = useState({});
     const [viewMode, setViewMode] = useState(0);
+    const [filteredData, setFilteredData] = useState(null);
 
     useEffect(() => {
         getApi();
@@ -83,14 +84,41 @@ const LandingPage = () => {
         return isFormFieldValid(name) && <small className="p-error">{formik.errors[name]}</small>;
     };
 
+    const searchFormik = useFormik({
+        initialValues: {
+            name: '',
+        },
+        validate: (data) => {
+            let errors = {};
 
-    // === === get API call === ===
-    const getApi = async () => {
+            return errors;
+        },
+        onSubmit: (data) => {
+            getApi(data.name);
+            console.log("search formik>>", data.name)
+        }
+    });
+    const isSearchFormFieldValid = (name) => !!(searchFormik.touched[name] && searchFormik.errors[name]);
+    const getSearchFormErrorMessage = (name) => {
+        return isSearchFormFieldValid(name) && <small className="p-error">{searchFormik.errors[name]}</small>;
+    };
+
+
+    // === === get API call === === === ===
+    const getApi = async (data) => {
         setProgressspinner(true);
+
         await axios
             .get(`https://dummyjson.com/products?limit=100`)
             .then((res) => {
                 const dt = res.data.products;
+                const fdt = dt.filter((item) => {
+                    if (item.brand == data) {
+                        return item
+                    }
+                })
+                setFilteredData(fdt);
+
                 setApiData(dt);
                 const phones = dt.filter((item) => {
                     if (item.category === "smartphones") {
@@ -290,14 +318,17 @@ const LandingPage = () => {
                     setViewMode(1);
                 }}
             />
-            <InputText
-                placeholder="Search"
-                type="text"
-                value={search}
-                onChange={(e) => {
-                    setSearch(e.value)
-                }}
-            />
+            <form onSubmit={searchFormik.handleSubmit}>
+                <InputText
+                    id='name'
+                    placeholder="Search"
+                    type="text"
+                    value={searchFormik.values.name}
+                    onChange={(e) => {
+                        searchFormik.handleChange(e);
+                    }}
+                />
+            </form>
         </div>
     );
 
@@ -306,244 +337,295 @@ const LandingPage = () => {
 
     return (
         <>
-            {viewMode === 1 ? (
-                <div className='row justify-content-center'>
-                    <div className='col-sm-12 col-md-6 col-lg-6'>
-                        {registrationForm()}
+
+            <div>
+                {viewMode === 1 ? (
+                    <div className='row justify-content-center'>
+                        <div className='col-sm-12 col-md-6 col-lg-6'>
+                            {registrationForm()}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <div className=''>
-                    <Toast ref={toast} />
-                    <div className="" style={{ width: "100%", position: "fixed", top: "0", zIndex: "5" }}>
-                        <Menubar model={items} start={start} end={end} />
-                    </div>
-                    <div className='row mx-1' style={{ marginTop: "5rem" }}>
-                        <p className='mx-3 my-2'> <strong>Mobiles</strong> </p>
-                        {smrtPhone !== undefined && smrtPhone !== null ? smrtPhone.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
+                ) : (
+                    <div className=''>
+                        <Toast ref={toast} />
+                        <div className="" style={{ width: "100%", position: "fixed", top: "0", zIndex: "5" }}>
+                            <Menubar model={items} start={start} end={end} />
+                        </div>
+
+                        {filteredData === undefined || filteredData === null || filteredData.length === 0 ?
+                            <div>
+                                <div className='row mx-1' style={{ marginTop: "5rem" }}>
+                                    <p className='mx-3 my-2'> <strong>Mobiles</strong> </p>
+                                    {smrtPhone !== undefined && smrtPhone !== null ? smrtPhone.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
                                 </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Laptops</strong> </p>
+                                    {laptopData !== undefined && laptopData !== null ? laptopData.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
+                                </div>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Fragrances</strong> </p>
+                                    {fregData !== undefined && fregData !== null ? fregData.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
+                                </div>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Skincare</strong> </p>
+                                    {skincareData !== undefined && skincareData !== null ? skincareData.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
+                                </div>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Groceries</strong> </p>
+                                    {grocerieData !== undefined && grocerieData !== null ? grocerieData.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
+                                </div>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Home Decoration</strong> </p>
+                                    {homeDecoration !== undefined && homeDecoration !== null ? homeDecoration.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
+                                </div>
+                                {progressspinner === true ? (<ProgressSpinner />) : ""}
+                                <div className='row mx-1'>
+                                    <p className='mx-3 my-2'> <strong>Furniture</strong> </p>
+                                    {furniture !== undefined && furniture !== null ? furniture.map((item) => (
+                                        <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
+                                            <div className='imgDiv'>
+                                                <img src={item.images[0]} width={150} alt=""></img>
+                                            </div>
+                                            <div className='contentDiv'>
+                                                <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                <p>{item.description}</p>
+                                                <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                <p>
+                                                    <Button
+                                                        label="Buy Now"
+                                                        className="p-button-rounded p-button-success"
+                                                        onClick={() => {
+                                                            setViewMode(1);
+                                                        }}
+                                                    />  &emsp;
+                                                    <Button
+                                                        label="Add to Cart"
+                                                        className="p-button-rounded p-button-warning"
+                                                        onClick={() => {
+                                                            showSuccess();
+                                                            setCount(() => count + 1)
+                                                        }} />
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )) : "Mobiles not available."}
                                 </div>
                             </div>
-                        )) : "Mobiles not available."}
+
+                            : (
+                                <div className='row mx-1' style={{ marginTop: "5rem" }}>
+                                    {filteredData.map((item) => (
+                                        <div>
+                                            <p className='mx-3 my-2'> <strong>Result found</strong> </p>
+                                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
+                                                <div className='imgDiv'>
+                                                    <img src={item.images[0]} width={150} alt=""></img>
+                                                </div>
+                                                <div className='contentDiv'>
+                                                    <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
+                                                    <p>{item.description}</p>
+                                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
+                                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
+                                                    <p>
+                                                        <Button
+                                                            label="Buy Now"
+                                                            className="p-button-rounded p-button-success"
+                                                            onClick={() => {
+                                                                setViewMode(1);
+                                                            }}
+                                                        />  &emsp;
+                                                        <Button
+                                                            label="Add to Cart"
+                                                            className="p-button-rounded p-button-warning"
+                                                            onClick={() => {
+                                                                showSuccess();
+                                                                setCount(() => count + 1)
+                                                            }} />
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                     </div>
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Laptops</strong> </p>
-                        {laptopData !== undefined && laptopData !== null ? laptopData.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Fragrances</strong> </p>
-                        {fregData !== undefined && fregData !== null ? fregData.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                    {progressspinner === true ? (<ProgressSpinner />) : ""}
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Skincare</strong> </p>
-                        {skincareData !== undefined && skincareData !== null ? skincareData.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Groceries</strong> </p>
-                        {grocerieData !== undefined && grocerieData !== null ? grocerieData.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Home Decoration</strong> </p>
-                        {homeDecoration !== undefined && homeDecoration !== null ? homeDecoration.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                    <div className='row mx-1'>
-                        <p className='mx-3 my-2'> <strong>Furniture</strong> </p>
-                        {furniture !== undefined && furniture !== null ? furniture.map((item) => (
-                            <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
-                                <div className='imgDiv'>
-                                    <img src={item.images[0]} width={150} alt=""></img>
-                                </div>
-                                <div className='contentDiv'>
-                                    <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
-                                    <p>{item.description}</p>
-                                    <p> <span className='bg-primary text-white p-1'><i className="pi pi-dollar" />{item.price}</span> &emsp; <span className='bg-info text-white p-1'>Discount: {item.discountPercentage}%</span> </p>
-                                    <p className='text-danger'>{item.stock < 50 ? "Hurry! Only a few items are left." : ""}</p>
-                                    <p>
-                                        <Button
-                                            label="Buy Now"
-                                            className="p-button-rounded p-button-success"
-                                            onClick={() => {
-                                                setViewMode(1);
-                                            }}
-                                        />  &emsp;
-                                        <Button
-                                            label="Add to Cart"
-                                            className="p-button-rounded p-button-warning"
-                                            onClick={() => {
-                                                showSuccess();
-                                                setCount(() => count + 1)
-                                            }} />
-                                    </p>
-                                </div>
-                            </div>
-                        )) : "Mobiles not available."}
-                    </div>
-                </div >)}
+
+                )}
+            </div>
         </>
     )
 }
