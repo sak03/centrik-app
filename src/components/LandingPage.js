@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
-import * as ReactBootstrap from 'react-bootstrap'
 import axios from 'axios';
 import { Menubar } from 'primereact/menubar';
 import { InputText } from 'primereact/inputtext';
-import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useFormik } from 'formik';
-import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { Password } from 'primereact/password';
 import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
-import { Divider } from 'primereact/divider';
 import { classNames } from 'primereact/utils';
 
 const LandingPage = () => {
@@ -26,7 +22,6 @@ const LandingPage = () => {
     const [grocerieData, setGrocerieData] = useState(null);
     const [homeDecoration, setHomeDecoration] = useState(null);
     const [count, setCount] = useState(0);
-    const [search, setSearch] = useState(null);
     const [furniture, setFurniture] = useState(null);
     const [progressspinner, setProgressspinner] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
