@@ -11,8 +11,11 @@ import { Password } from 'primereact/password';
 import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
 import { classNames } from 'primereact/utils';
-
+import { useDispatch } from 'react-redux';
+import {cardData} from '../redux/action'
+ 
 const LandingPage = () => {
+    const dispatch = useDispatch();
     const [apiData, setApiData] = useState(null);
     const [smrtPhone, setSmrtPhone] = useState(null);
     const toast = useRef(null);
@@ -367,6 +370,7 @@ const LandingPage = () => {
                                                         className="p-button-rounded p-button-success"
                                                         onClick={() => {
                                                             setViewMode(1);
+                                                            dispatch(cardData({ numberValue: 100}))
                                                         }}
                                                     />  &emsp;
                                                     <Button
