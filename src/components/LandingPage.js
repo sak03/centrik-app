@@ -14,6 +14,7 @@ import { classNames } from 'primereact/utils';
 import { useDispatch } from 'react-redux';
 import { cardData } from '../redux/action';
 import { Carousel } from 'primereact/carousel';
+import { CCarousel, CCarouselItem, CImage } from '@coreui/react';
 
 const LandingPage = () => {
     const dispatch = useDispatch();
@@ -32,7 +33,6 @@ const LandingPage = () => {
     const [formData, setFormData] = useState({});
     const [viewMode, setViewMode] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
-    const [imgValue, setImgValue] = useState([]);
 
     useEffect(() => {
         getApi();
@@ -118,7 +118,7 @@ const LandingPage = () => {
                     }
                 })
                 setFilteredData(fdt);
-                
+
                 setApiData(dt);
                 const phones = dt.filter((item) => {
                     if (item.category === "smartphones") {
@@ -126,11 +126,6 @@ const LandingPage = () => {
                     }
                 });
                 setSmrtPhone(phones);
-                const phoneImgData = phones.map((item)=>{
-                    return item.images
-                })
-                setImgValue(phoneImgData);
-                console.log("images", phoneImgData);
 
                 const laptops = dt.filter((item) => {
                     if (item.category === "laptops") {
@@ -338,39 +333,6 @@ const LandingPage = () => {
         </div>
     );
 
-    const responsiveOptions = [
-        {
-            breakpoint: '1199px',
-            numVisible: 1,
-            numScroll: 1
-        },
-        // {
-        //     breakpoint: '991px',
-        //     numVisible: 1,
-        //     numScroll: 1
-        // },
-        // {
-        //     breakpoint: '767px',
-        //     numVisible: 1,
-        //     numScroll: 1
-        // }
-    ];
-
-    const productTemplate = (product) => {
-        return (
-            <div className="product-item">
-                <div className="product-item-content">
-                    <div className="mb-3">
-                        <img src={product.images} width={150} alt={product.title} className="product-image" />
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
-
-
-
     return (
         <>
 
@@ -395,14 +357,13 @@ const LandingPage = () => {
                                     {smrtPhone !== undefined && smrtPhone !== null ? smrtPhone.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <Carousel
-                                                    value={imgValue}
-                                                    numVisible={1}
-                                                    numScroll={1}
-                                                    responsiveOptions={responsiveOptions}
-                                                    itemTemplate={() => productTemplate(item)}
-                                                />
-                                                {/* <img src={item.images[0]} width={150} alt=""></img> */}
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -436,7 +397,13 @@ const LandingPage = () => {
                                     {laptopData !== undefined && laptopData !== null ? laptopData.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -469,7 +436,13 @@ const LandingPage = () => {
                                     {fregData !== undefined && fregData !== null ? fregData.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -502,7 +475,13 @@ const LandingPage = () => {
                                     {skincareData !== undefined && skincareData !== null ? skincareData.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -535,7 +514,13 @@ const LandingPage = () => {
                                     {grocerieData !== undefined && grocerieData !== null ? grocerieData.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -568,7 +553,13 @@ const LandingPage = () => {
                                     {homeDecoration !== undefined && homeDecoration !== null ? homeDecoration.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -601,7 +592,13 @@ const LandingPage = () => {
                                     {furniture !== undefined && furniture !== null ? furniture.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4I shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <CCarousel controls indicators>
+                                                    {item.images.map((img) => (
+                                                        <CCarouselItem>
+                                                            <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                        </CCarouselItem>
+                                                    ))}
+                                                </CCarousel>
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span><strong>{item.title}</strong></span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -637,7 +634,13 @@ const LandingPage = () => {
                                             <p className='mx-3 my-2'> <strong>Result found</strong> </p>
                                             <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                                 <div className='imgDiv'>
-                                                    <img src={item.images[0]} width={150} alt=""></img>
+                                                    <CCarousel controls indicators>
+                                                        {item.images.map((img) => (
+                                                            <CCarouselItem>
+                                                                <CImage className="d-block w-100" src={img} width={100} alt={item.title} />
+                                                            </CCarouselItem>
+                                                        ))}
+                                                    </CCarousel>
                                                 </div>
                                                 <div className='contentDiv'>
                                                     <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
