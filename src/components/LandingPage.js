@@ -12,8 +12,9 @@ import { Checkbox } from 'primereact/checkbox';
 import { Dialog } from 'primereact/dialog';
 import { classNames } from 'primereact/utils';
 import { useDispatch } from 'react-redux';
-import {cardData} from '../redux/action'
- 
+import { cardData } from '../redux/action';
+import { Carousel } from 'primereact/carousel';
+
 const LandingPage = () => {
     const dispatch = useDispatch();
     const [apiData, setApiData] = useState(null);
@@ -31,6 +32,7 @@ const LandingPage = () => {
     const [formData, setFormData] = useState({});
     const [viewMode, setViewMode] = useState(0);
     const [filteredData, setFilteredData] = useState(null);
+    const [imgValue, setImgValue] = useState([]);
 
     useEffect(() => {
         getApi();
@@ -116,7 +118,7 @@ const LandingPage = () => {
                     }
                 })
                 setFilteredData(fdt);
-
+                
                 setApiData(dt);
                 const phones = dt.filter((item) => {
                     if (item.category === "smartphones") {
@@ -124,6 +126,12 @@ const LandingPage = () => {
                     }
                 });
                 setSmrtPhone(phones);
+                const phoneImgData = phones.map((item)=>{
+                    return item.images
+                })
+                setImgValue(phoneImgData);
+                console.log("images", phoneImgData);
+
                 const laptops = dt.filter((item) => {
                     if (item.category === "laptops") {
                         return item
@@ -330,6 +338,36 @@ const LandingPage = () => {
         </div>
     );
 
+    const responsiveOptions = [
+        {
+            breakpoint: '1199px',
+            numVisible: 1,
+            numScroll: 1
+        },
+        // {
+        //     breakpoint: '991px',
+        //     numVisible: 1,
+        //     numScroll: 1
+        // },
+        // {
+        //     breakpoint: '767px',
+        //     numVisible: 1,
+        //     numScroll: 1
+        // }
+    ];
+
+    const productTemplate = (product) => {
+        return (
+            <div className="product-item">
+                <div className="product-item-content">
+                    <div className="mb-3">
+                        <img src={product.images} width={150} alt={product.title} className="product-image" />
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
 
 
 
@@ -357,7 +395,14 @@ const LandingPage = () => {
                                     {smrtPhone !== undefined && smrtPhone !== null ? smrtPhone.map((item) => (
                                         <div className='col-sm-12 col-md-4 col-lg-4 shadow rounded my-2'>
                                             <div className='imgDiv'>
-                                                <img src={item.images[0]} width={150} alt=""></img>
+                                                <Carousel
+                                                    value={imgValue}
+                                                    numVisible={1}
+                                                    numScroll={1}
+                                                    responsiveOptions={responsiveOptions}
+                                                    itemTemplate={() => productTemplate(item)}
+                                                />
+                                                {/* <img src={item.images[0]} width={150} alt=""></img> */}
                                             </div>
                                             <div className='contentDiv'>
                                                 <p className='my-1'><span> <strong>{item.title}</strong> </span> &emsp; <span className='bg-success p-1 text-white rouned'>{item.rating} <i className="pi pi-star" /></span></p>
@@ -370,7 +415,7 @@ const LandingPage = () => {
                                                         className="p-button-rounded p-button-success"
                                                         onClick={() => {
                                                             setViewMode(1);
-                                                            dispatch(cardData({ numberValue: 100}))
+                                                            dispatch(cardData({ numberValue: 100 }))
                                                         }}
                                                     />  &emsp;
                                                     <Button
